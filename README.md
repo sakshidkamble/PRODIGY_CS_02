@@ -3,13 +3,10 @@ Task 02 - PIXEL MANIPULATION FOR IMAGE ENCRYPTION ( Submission of Prodigy InfoTe
 
 ### *How to Run:*
 1. Install Pillow if not already:
-   bash
    pip install pillow
-   
-2. Save the code to pixel_encryptor_gui.py.
+2. Save the code to image_encryption.py.
 3. Run:
-   bash
-   python pixel_encryptor_gui.py
+ python  image_encryption.py.
    
 
 ---
