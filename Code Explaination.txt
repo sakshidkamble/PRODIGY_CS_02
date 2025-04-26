@@ -1,0 +1,165 @@
+## Project Overview
+
+This is a simple image encryption/decryption tool that modifies pixel values using a key. It provides a graphical interface using Tkinter for easy use.
+
+## How to Run in VS Code (Step-by-Step)
+
+1. *Install Python*: Make sure you have Python installed (3.6+ recommended)
+2. *Install VS Code*: Download from [code.visualstudio.com](https://code.visualstudio.com/)
+3. *Set up VS Code*:
+   - Install the Python extension from the VS Code marketplace
+   - Open a new terminal in VS Code (Terminal > New Terminal)
+
+4. *Install Dependencies*:
+   bash
+   pip install pillow
+   
+
+5. *Create the Project*:
+   - Create a new folder for your project
+   - Create a new file
+
+## Code Explanation (Line by Line)
+
+### 1. Import Statements
+python
+from tkinter import Tk, Label, Button, Entry, filedialog, messagebox
+from PIL import Image
+import os
+
+- tkinter: Python's standard GUI library
+  - Tk: Main window class
+  - Label, Button, Entry: GUI widgets
+  - filedialog: For file selection dialogs
+  - messagebox: For showing alerts/messages
+- PIL.Image: From Pillow library, for image processing
+- os: For file path operations
+
+### 2. Encryption Function
+python
+def encrypt_image(input_path, output_path, key):
+    try:
+        image = Image.open(input_path)
+        pixels = image.load()
+        width, height = image.size
+
+        for x in range(width):
+            for y in range(height):
+                r, g, b = pixels[x, y]
+                r = (r + key) % 256
+                g = (g + key) % 256
+                b = (b + key) % 256
+                pixels[x, y] = (r, g, b)
+
+        image.save(output_path)
+        messagebox.showinfo("Success", f"Image encrypted successfully:\n{output_path}")
+    except Exception as e:
+        messagebox.showerror("Error", f"Encryption failed: {e}")
+
+- Opens the image file
+- Loads pixel data
+- Loops through each pixel and modifies RGB values by adding the key
+- Uses modulo 256 to keep values within valid color range
+- Saves the modified image
+- Shows success/error messages
+
+### 3. Decryption Function
+python
+def decrypt_image(input_path, output_path, key):
+    try:
+        image = Image.open(input_path)
+        pixels = image.load()
+        width, height = image.size
+
+        for x in range(width):
+            for y in range(height):
+                r, g, b = pixels[x, y]
+                r = (r - key) % 256
+                g = (g - key) % 256
+                b = (b - key) % 256
+                pixels[x, y] = (r, g, b)
+
+        image.save(output_path)
+        messagebox.showinfo("Success", f"Image decrypted successfully:\n{output_path}")
+    except Exception as e:
+        messagebox.showerror("Error", f"Decryption failed: {e}")
+
+- Similar to encryption but subtracts the key instead
+
+### 4. GUI Helper Functions
+python
+def browse_image():
+    filename = filedialog.askopenfilename(filetypes=[("Image files", "*.png *.jpg *.jpeg *.bmp")])
+    entry_path.delete(0, 'end')
+    entry_path.insert(0, filename)
+
+def encrypt_action():
+    path = entry_path.get()
+    key = entry_key.get()
+    if not path or not key:
+        messagebox.showwarning("Input Missing", "Please provide both image and key.")
+        return
+    output_path = os.path.splitext(path)[0] + "_encrypted.png"
+    encrypt_image(path, output_path, int(key))
+
+def decrypt_action():
+    path = entry_path.get()
+    key = entry_key.get()
+    if not path or not key:
+        messagebox.showwarning("Input Missing", "Please provide both image and key.")
+        return
+    output_path = os.path.splitext(path)[0] + "_decrypted.png"
+    decrypt_image(path, output_path, int(key))
+
+- browse_image(): Opens file dialog to select image
+- encrypt_action()/decrypt_action(): Validate inputs and call the appropriate function
+
+### 5. GUI Setup
+python
+window = Tk()
+window.title("Image Pixel Encryptor")
+window.geometry("400x250")
+window.resizable(False, False)
+
+- Creates main window
+- Sets title and size
+- Makes window non-resizable
+
+### 6. GUI Widgets
+python
+Label(window, text="Select Image:").pack(pady=5)
+entry_path = Entry(window, width=40)
+entry_path.pack(pady=5)
+Button(window, text="Browse", command=browse_image).pack(pady=5)
+
+Label(window, text="Enter Key (integer):").pack(pady=5)
+entry_key = Entry(window, width=20)
+entry_key.pack(pady=5)
+
+Button(window, text="Encrypt Image", width=20, command=encrypt_action).pack(pady=10)
+Button(window, text="Decrypt Image", width=20, command=decrypt_action).pack(pady=5)
+
+- Creates and arranges all UI elements:
+  - Labels for instructions
+  - Entry fields for path and key
+  - Buttons for browsing and actions
+
+### 7. Main Loop
+python
+window.mainloop()
+
+- Starts the GUI event loop
+
+## How to Use the Application
+
+1. Click "Browse" to select an image (PNG, JPG, JPEG, BMP)
+2. Enter a numeric key (e.g., 42)
+3. Click:
+   - "Encrypt Image" to create an encrypted version
+   - "Decrypt Image" to decrypt an encrypted image
+
+The encrypted/decrypted images will be saved in the same folder as the original with _encrypted or _decrypted added to the filename.
+
+## Security Note
+
+This is a simple pixel manipulation algorithm meant for educational purposes. For real-world secure encryption, consider using proper cryptographic algorithms like AES.
